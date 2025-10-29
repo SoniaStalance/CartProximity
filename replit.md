@@ -4,12 +4,14 @@
 This is a Java Spring Boot microservice that implements an event-driven geospatial processing system for a Smart Cart application. The service consumes real-time cart location data from Apache Kafka, performs proximity calculations using Azure Cosmos DB geospatial queries, and publishes item recommendations back to Kafka.
 
 ## Recent Changes
-- **2025-10-29**: Initial project setup
+- **2025-10-29**: Initial project setup and reliability improvements
   - Created complete Spring Boot microservice with Kafka and Azure Cosmos DB integration
-  - Implemented consumer for cart-locations topic
-  - Implemented geospatial query with 10-meter radius proximity calculation
-  - Implemented producer for cart-recommendations topic
+  - Implemented consumer for cart-locations topic with manual offset acknowledgment
+  - Implemented geospatial query with 10-meter radius proximity calculation using ST_DISTANCE
+  - Implemented producer for cart-recommendations topic with idempotent writes
   - Configured all necessary Spring Boot components and dependencies
+  - Enhanced reliability: disabled auto-commit and added manual acknowledgment to prevent message loss
+  - Added comprehensive documentation for Azure Cosmos DB key configuration
 
 ## Project Architecture
 

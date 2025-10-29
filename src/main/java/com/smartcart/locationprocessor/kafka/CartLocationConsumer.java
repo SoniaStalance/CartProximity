@@ -7,6 +7,7 @@ import com.smartcart.locationprocessor.service.LocationProcessingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,7 +23,7 @@ public class CartLocationConsumer {
         groupId = "${kafka.consumer.group-id}",
         containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumeCartLocation(String message) {
+    public void consumeCartLocation(String message, Acknowledgment acknowledgment) {
         log.info("Received cart location message: {}", message);
         
         try {
@@ -33,6 +34,9 @@ public class CartLocationConsumer {
                     cartLocation.getLongitude());
             
             locationProcessingService.processCartLocation(cartLocation);
+            
+            acknowledgment.acknowledge();
+            log.debug("Successfully acknowledged message for cart: {}", cartLocation.getCartId());
             
         } catch (JsonProcessingException e) {
             log.error("Failed to parse cart location message: {}", message, e);

@@ -40,8 +40,10 @@ export KAFKA_TOPIC_CART_RECOMMENDATIONS=cart-recommendations
 export KAFKA_CONSUMER_GROUP_ID=location-processor-group
 
 # Azure Cosmos DB Configuration
+# IMPORTANT: AZURE_COSMOS_KEY must be a valid base64-encoded primary or secondary key
+# You can find this in Azure Portal under your Cosmos DB account > Keys section
 export AZURE_COSMOS_ENDPOINT=https://your-cosmos-account.documents.azure.com:443/
-export AZURE_COSMOS_KEY=your-cosmos-key
+export AZURE_COSMOS_KEY=your-base64-encoded-cosmos-key
 export AZURE_COSMOS_DATABASE=smartcart
 export AZURE_COSMOS_CONTAINER=store-items
 
@@ -156,13 +158,26 @@ The application provides detailed logging:
 - JSON parsing errors are logged without crashing the consumer
 - Kafka connection issues are handled with automatic retries
 - Cosmos DB query failures are logged with full context
+- Manual offset acknowledgment prevents message loss if publishing fails
 
-## Performance Considerations
+## Reliability Features
 
-- Uses direct connection mode for Cosmos DB (lower latency)
-- Enables idempotent producer for exactly-once semantics
-- Automatic offset management for reliable message processing
-- Geospatial indexes ensure fast proximity queries
+- **Manual Offset Acknowledgment**: Kafka offsets are only committed after successful processing and publishing, preventing message loss
+- **Idempotent Producer**: Ensures exactly-once delivery semantics for recommendations
+- **Geospatial Indexes**: Fast proximity queries even with millions of items
+- **Direct Connection Mode**: Lower latency for Cosmos DB queries
+
+## Troubleshooting
+
+### Application fails to start with "Illegal base64 character" error
+
+This error occurs when the `AZURE_COSMOS_KEY` environment variable is not set or contains an invalid key. 
+
+**Solution**: Ensure you have set a valid base64-encoded primary or secondary key from your Azure Cosmos DB account. You can find this key in the Azure Portal under:
+1. Navigate to your Cosmos DB account
+2. Go to "Keys" section
+3. Copy either the "Primary Key" or "Secondary Key" (not the connection string)
+4. Set it as the `AZURE_COSMOS_KEY` environment variable
 
 ## Project Structure
 
