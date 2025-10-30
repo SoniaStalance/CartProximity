@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -45,18 +45,16 @@ public class StoreItemRepository {
         );
         
         CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
-        
-        List<StoreItem> items = new ArrayList<>();
-        container.queryItems(querySpec, options, StoreItem.class)
-                .iterableByPage()
-                .forEach(page -> {
-                    page.getResults().forEach(items::add);
-                });
-        
+
+        List<StoreItem> items = container.queryItems(querySpec, options, StoreItem.class)
+                .streamByPage()
+                .flatMap(page -> page.getResults().stream())
+                .collect(Collectors.toList());
+
         log.info("Found {} items within {} meters", items.size(), radiusMeters);
         return items;
     }
-    
+
     public List<StoreItem> findNearbyItems(double latitude, double longitude) {
         return findItemsWithinRadius(latitude, longitude, proximityRadiusMeters);
     }

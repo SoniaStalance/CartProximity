@@ -12,12 +12,11 @@ kafka:
 
 azure:
   cosmos:
-    endpoint: ${AZURE_COSMOS_ENDPOINT:https://your-cosmos-account.documents.azure.com:443/}
-    key: ${AZURE_COSMOS_KEY:your-cosmos-key}
+    endpoint: ${AZURE_COSMOS_ENDPOINT:https://dev-sonia.documents.azure.com:443/}
+    key: ${AZURE_COSMOS_KEY:<removed-my-key>}
     database: ${AZURE_COSMOS_DATABASE:smartcart}
     container: ${AZURE_COSMOS_CONTAINER:store-items}
-    connection-mode: ${AZURE_COSMOS_CONNECTION_MODE:DIRECT}
-    proximity-radius-meters: ${PROXIMITY_RADIUS_METERS:10}
+    proximity-radius-meters: ${PROXIMITY_RADIUS_METERS:20}
 
 logging:
   level:

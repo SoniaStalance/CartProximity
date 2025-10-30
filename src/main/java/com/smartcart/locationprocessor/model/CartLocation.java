@@ -1,26 +1,23 @@
 package com.smartcart.locationprocessor.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartLocation {
     
     @NotNull
-    @JsonProperty("cartId")
     private String cartId;
     
     @NotNull
-    @JsonProperty("latitude")
     private Double latitude;
     
     @NotNull
-    @JsonProperty("longitude")
     private Double longitude;
 }

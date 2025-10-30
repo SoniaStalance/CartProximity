@@ -23,10 +23,7 @@ public class LocationProcessingService {
     public void processCartLocation(CartLocation cartLocation) {
         log.info("Processing location for cart: {}", cartLocation.getCartId());
         
-        List<StoreItem> nearbyItems = storeItemRepository.findNearbyItems(
-            cartLocation.getLatitude(),
-            cartLocation.getLongitude()
-        );
+        List<StoreItem> nearbyItems = storeItemRepository.findNearbyItems(cartLocation.getLatitude(), cartLocation.getLongitude());
         
         List<String> nearbyItemIds = nearbyItems.stream()
             .map(StoreItem::getItemId)
@@ -34,14 +31,10 @@ public class LocationProcessingService {
         
         log.info("Found {} nearby items for cart {}", nearbyItemIds.size(), cartLocation.getCartId());
         
-        CartRecommendation recommendation = new CartRecommendation(
-            cartLocation.getCartId(),
-            nearbyItemIds
-        );
+        CartRecommendation recommendation = new CartRecommendation(cartLocation.getCartId(), nearbyItemIds);
         
         recommendationProducer.sendRecommendation(recommendation);
         
-        log.info("Successfully processed cart location and sent recommendation for cart: {}", 
-                cartLocation.getCartId());
+        log.info("Successfully processed cart location and sent recommendation for cart: {}", cartLocation.getCartId());
     }
 }
