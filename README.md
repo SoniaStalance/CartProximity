@@ -13,7 +13,7 @@ Cart Location (Kafka) → Location Processor → Azure Cosmos DB (Geospatial Que
 ## Features
 
 - **Kafka Consumer**: Reads real-time cart location data from `cart-locations` topic
-- **Geospatial Processing**: Queries Azure Cosmos DB for store items within 10-meter radius
+- **Geospatial Processing**: Queries Azure Cosmos DB for store items within 20-meter radius
 - **Kafka Producer**: Publishes recommendations to `cart-recommendations` topic
 - **Event-Driven Architecture**: Fully asynchronous processing loop
 
@@ -47,8 +47,8 @@ export AZURE_COSMOS_KEY=your-base64-encoded-cosmos-key
 export AZURE_COSMOS_DATABASE=smartcart
 export AZURE_COSMOS_CONTAINER=store-items
 
-# Optional: Configure proximity radius (default: 10 meters)
-export PROXIMITY_RADIUS_METERS=10
+# Optional: Configure proximity radius (default: 20 meters)
+export PROXIMITY_RADIUS_METERS=20
 ```
 
 ### Azure Cosmos DB Setup
@@ -130,7 +130,7 @@ java -jar target/location-processor-1.0.0.jar
 2. **Processing**: When a cart location message arrives:
    - Parses the JSON to extract cart ID, latitude, and longitude
    - Executes a geospatial query against Azure Cosmos DB using ST_DISTANCE
-   - Finds all store items within 10 meters of the cart's position
+   - Finds all store items within 20 meters of the cart's position
 3. **Producer**: Creates a recommendation message with cart ID and nearby item IDs
 4. **Publishing**: Sends the recommendation to the `cart-recommendations` Kafka topic
 
@@ -140,7 +140,7 @@ The service uses Cosmos DB's geospatial capabilities with the ST_DISTANCE functi
 
 ```sql
 SELECT * FROM c 
-WHERE ST_DISTANCE(c.location, {'type': 'Point', 'coordinates':[longitude, latitude]}) <= 10
+WHERE ST_DISTANCE(c.location, {'type': 'Point', 'coordinates':[longitude, latitude]}) <= 20
 ```
 
 This query efficiently finds all items within the specified radius using the geospatial index.
