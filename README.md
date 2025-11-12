@@ -1,11 +1,11 @@
 # Smart Cart Location Processor
 
-A Java Spring Boot microservice that processes real-time shopping cart location data from Apache Kafka, performs geospatial proximity calculations using Azure Cosmos DB, and publishes item recommendations back to Kafka.
+A Java Spring Boot microservice that processes real-time shopping cart location data from Apache Kafka, performs geospatial proximity calculations using MongoDB, and publishes item recommendations back to Kafka.
 
 ## Architecture
 
 ```
-Cart Location (Kafka) → Location Processor → Azure Cosmos DB (Geospatial Query)
+Cart Location (Kafka) → Location Processor → MongoDB (Geospatial Query)
                              ↓
                     Cart Recommendations (Kafka)
 ```
@@ -13,7 +13,7 @@ Cart Location (Kafka) → Location Processor → Azure Cosmos DB (Geospatial Que
 ## Features
 
 - **Kafka Consumer**: Reads real-time cart location data from `cart-locations` topic
-- **Geospatial Processing**: Queries Azure Cosmos DB for store items within 20-meter radius
+- **Geospatial Processing**: Queries MongoDB for store items within 10-meter radius
 - **Kafka Producer**: Publishes recommendations to `cart-recommendations` topic
 - **Event-Driven Architecture**: Fully asynchronous processing loop
 
@@ -22,7 +22,7 @@ Cart Location (Kafka) → Location Processor → Azure Cosmos DB (Geospatial Que
 - Java 17
 - Spring Boot 3.2.0
 - Spring Kafka
-- Azure Cosmos DB Java SDK
+- Spring Data MongoDB
 - Lombok
 - Jackson for JSON processing
 
@@ -39,25 +39,21 @@ export KAFKA_TOPIC_CART_LOCATIONS=cart-locations
 export KAFKA_TOPIC_CART_RECOMMENDATIONS=cart-recommendations
 export KAFKA_CONSUMER_GROUP_ID=location-processor-group
 
-# Azure Cosmos DB Configuration
-# IMPORTANT: AZURE_COSMOS_KEY must be a valid base64-encoded primary or secondary key
-# You can find this in Azure Portal under your Cosmos DB account > Keys section
-export AZURE_COSMOS_ENDPOINT=https://your-cosmos-account.documents.azure.com:443/
-export AZURE_COSMOS_KEY=your-base64-encoded-cosmos-key
-export AZURE_COSMOS_DATABASE=smartcart
-export AZURE_COSMOS_CONTAINER=store-items
+# MongoDB Configuration
+export MONGODB_URI=mongodb://localhost:27017/smartcart
+export MONGODB_DATABASE=smartcart
 
-# Optional: Configure proximity radius (default: 20 meters)
-export PROXIMITY_RADIUS_METERS=20
+# Optional: Configure proximity radius (default: 10 meters)
+export PROXIMITY_RADIUS_METERS=10
 ```
 
-### Azure Cosmos DB Setup
+### MongoDB Setup
 
-Your Cosmos DB container should have items with the following structure:
+Your MongoDB collection should have items with the following structure:
 
 ```json
 {
-  "id": "unique-id",
+  "_id": "unique-id",
   "itemId": "item-123",
   "name": "Product Name",
   "latitude": 37.7749,
@@ -69,19 +65,15 @@ Your Cosmos DB container should have items with the following structure:
 }
 ```
 
-**Important**: Create a geospatial index on the `location` field for optimal performance:
+**Important**: Create a 2dsphere geospatial index on the `location` field for optimal performance:
 
-```json
-{
-  "indexingMode": "consistent",
-  "spatialIndexes": [
-    {
-      "path": "/location/*",
-      "types": ["Point"]
-    }
-  ]
-}
+```javascript
+db.getCollection("store-items").createIndex({ "location": "2dsphere" })
 ```
+
+Or using MongoDB Compass, create an index with:
+- Field: `location`
+- Type: `2dsphere`
 
 ## Message Formats
 
@@ -129,21 +121,30 @@ java -jar target/location-processor-1.0.0.jar
 1. **Consumer**: The service listens to the `cart-locations` Kafka topic
 2. **Processing**: When a cart location message arrives:
    - Parses the JSON to extract cart ID, latitude, and longitude
-   - Executes a geospatial query against Azure Cosmos DB using ST_DISTANCE
-   - Finds all store items within 20 meters of the cart's position
+   - Executes a geospatial query against MongoDB using $nearSphere
+   - Finds all store items within 10 meters of the cart's position
 3. **Producer**: Creates a recommendation message with cart ID and nearby item IDs
 4. **Publishing**: Sends the recommendation to the `cart-recommendations` Kafka topic
 
 ## Geospatial Query
 
-The service uses Cosmos DB's geospatial capabilities with the ST_DISTANCE function:
+The service uses MongoDB's geospatial capabilities with the `$nearSphere` operator:
 
-```sql
-SELECT * FROM c 
-WHERE ST_DISTANCE(c.location, {'type': 'Point', 'coordinates':[longitude, latitude]}) <= 20
+```javascript
+db.getCollection("store-items").find({
+  location: {
+    $nearSphere: {
+      $geometry: {
+        type: "Point",
+        coordinates: [longitude, latitude]
+      },
+      $maxDistance: 10
+    }
+  }
+})
 ```
 
-This query efficiently finds all items within the specified radius using the geospatial index.
+This query efficiently finds all items within the specified radius using the 2dsphere geospatial index.
 
 ## Logging
 
@@ -157,27 +158,36 @@ The application provides detailed logging:
 
 - JSON parsing errors are logged without crashing the consumer
 - Kafka connection issues are handled with automatic retries
-- Cosmos DB query failures are logged with full context
+- MongoDB query failures are logged with full context
 - Manual offset acknowledgment prevents message loss if publishing fails
 
 ## Reliability Features
 
 - **Manual Offset Acknowledgment**: Kafka offsets are only committed after successful processing and publishing, preventing message loss
 - **Idempotent Producer**: Ensures exactly-once delivery semantics for recommendations
-- **Geospatial Indexes**: Fast proximity queries even with millions of items
-- **Direct Connection Mode**: Lower latency for Cosmos DB queries
+- **Geospatial Indexes**: Fast proximity queries even with millions of items using MongoDB's 2dsphere index
+- **Connection Pooling**: Efficient database connection management
 
 ## Troubleshooting
 
-### Application fails to start with "Illegal base64 character" error
+### Application fails to connect to MongoDB
 
-This error occurs when the `AZURE_COSMOS_KEY` environment variable is not set or contains an invalid key. 
+**Common Issues**:
+1. **MongoDB not running**: Ensure MongoDB is running on the specified host and port
+2. **Incorrect connection string**: Verify the `MONGODB_URI` environment variable is correctly formatted
+3. **Authentication failure**: If using authentication, ensure credentials are included in the connection URI
 
-**Solution**: Ensure you have set a valid base64-encoded primary or secondary key from your Azure Cosmos DB account. You can find this key in the Azure Portal under:
-1. Navigate to your Cosmos DB account
-2. Go to "Keys" section
-3. Copy either the "Primary Key" or "Secondary Key" (not the connection string)
-4. Set it as the `AZURE_COSMOS_KEY` environment variable
+**Example MongoDB URI formats**:
+```bash
+# Local MongoDB without authentication
+export MONGODB_URI=mongodb://localhost:27017/smartcart
+
+# MongoDB with authentication
+export MONGODB_URI=mongodb://username:password@localhost:27017/smartcart
+
+# MongoDB Atlas (cloud)
+export MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/smartcart
+```
 
 ## Project Structure
 
@@ -185,7 +195,7 @@ This error occurs when the `AZURE_COSMOS_KEY` environment variable is not set or
 src/main/java/com/smartcart/locationprocessor/
 ├── LocationProcessorApplication.java
 ├── config/
-│   ├── CosmosConfig.java
+│   ├── MongoConfig.java
 │   ├── JacksonConfig.java
 │   ├── KafkaConsumerConfig.java
 │   └── KafkaProducerConfig.java
