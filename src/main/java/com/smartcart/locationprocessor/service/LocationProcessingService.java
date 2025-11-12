@@ -3,8 +3,8 @@ package com.smartcart.locationprocessor.service;
 import com.smartcart.locationprocessor.kafka.CartRecommendationProducer;
 import com.smartcart.locationprocessor.model.CartLocation;
 import com.smartcart.locationprocessor.model.CartRecommendation;
-import com.smartcart.locationprocessor.model.StoreItem;
-import com.smartcart.locationprocessor.repository.StoreItemRepository;
+import com.smartcart.locationprocessor.model.ItemLocation;
+import com.smartcart.locationprocessor.repository.ItemLocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LocationProcessingService {
 
-    private final StoreItemRepository storeItemRepository;
+    private final ItemLocationRepository itemLocationRepository;
     private final CartRecommendationProducer recommendationProducer;
 
     public void processCartLocation(CartLocation cartLocation) {
         log.info("Processing location for cart: {}", cartLocation.getCartId());
         
-        List<StoreItem> nearbyItems = storeItemRepository.findNearbyItems(cartLocation.getLatitude(), cartLocation.getLongitude());
+        List<ItemLocation> nearbyItems = itemLocationRepository.findNearbyItems(cartLocation.getLatitude(), cartLocation.getLongitude());
         
         List<String> nearbyItemIds = nearbyItems.stream()
-            .map(StoreItem::getItemId)
+            .map(ItemLocation::getItemId)
             .collect(Collectors.toList());
         
         log.info("Found {} nearby items for cart {}", nearbyItemIds.size(), cartLocation.getCartId());

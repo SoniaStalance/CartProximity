@@ -18,15 +18,30 @@ public class KafkaProducerConfig {
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${kafka.producer.key-serializer}")
+    private String keySerializer;
+
+    @Value("${kafka.producer.value-serializer}")
+    private String valueSerializer;
+
+    @Value("${kafka.producer.acks}")
+    private String acks;
+
+    @Value("${kafka.producer.retries}")
+    private Integer retries;
+
+    @Value("${kafka.producer.enable-idempotence}")
+    private Boolean enableIdempotence;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.ACKS_CONFIG, "all");
-        config.put(ProducerConfig.RETRIES_CONFIG, 3);
-        config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
+        config.put(ProducerConfig.ACKS_CONFIG, acks);
+        config.put(ProducerConfig.RETRIES_CONFIG, retries);
+        config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
         
         return new DefaultKafkaProducerFactory<>(config);
     }

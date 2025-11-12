@@ -1,22 +1,32 @@
 spring:
   application:
     name: location-processor
+  data:
+    mongodb:
+      uri:
+      database: product
+      collection: location
+      proximity-radius-meters: 20
 
 kafka:
   bootstrap-servers: localhost:9092
   topic:
     cart-locations: cart-locations
     cart-recommendations: cart-recommendations
+
   consumer:
     group-id: location-processor-group
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    auto-offset-reset: earliest
+    enable-auto-commit: false
 
-azure:
-  cosmos:
-    endpoint: https://dev-sonia.documents.azure.com:443/
-    key: <removed-my-key>
-    database: smartcart
-    container: store-items
-    proximity-radius-meters: 20
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    acks: all
+    retries: 3
+    enableIdempotence: true
 
 logging:
   level:
