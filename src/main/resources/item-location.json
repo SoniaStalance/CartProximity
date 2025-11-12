@@ -1,0 +1,212 @@
+[
+  {
+    "itemId": "milk-101",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41940, 37.77480]
+    }
+  },
+  {
+    "itemId": "cheese-102",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41945, 37.77485]
+    }
+  },
+  {
+    "itemId": "yogurt-103",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41935, 37.77490]
+    }
+  },
+  {
+    "itemId": "butter-104",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41930, 37.77495]
+    }
+  },
+  {
+    "itemId": "cream-105",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41950, 37.77475]
+    }
+  },
+  {
+    "itemId": "apple-201",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42100, 37.77600]
+    }
+  },
+  {
+    "itemId": "banana-202",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42105, 37.77605]
+    }
+  },
+  {
+    "itemId": "lettuce-203",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42095, 37.77610]
+    }
+  },
+  {
+    "itemId": "tomato-204",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42090, 37.77595]
+    }
+  },
+  {
+    "itemId": "carrot-205",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42110, 37.77590]
+    }
+  },
+  {
+    "itemId": "bread-301",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42010, 37.77530]
+    }
+  },
+  {
+    "itemId": "bagel-302",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42015, 37.77535]
+    }
+  },
+  {
+    "itemId": "muffin-303",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42005, 37.77540]
+    }
+  },
+  {
+    "itemId": "roll-304",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42000, 37.77525]
+    }
+  },
+  {
+    "itemId": "cake-305",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42020, 37.77520]
+    }
+  },
+  {
+    "itemId": "soup-401",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41800, 37.77700]
+    }
+  },
+  {
+    "itemId": "beans-402",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41805, 37.77705]
+    }
+  },
+  {
+    "itemId": "tuna-403",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41795, 37.77710]
+    }
+  },
+  {
+    "itemId": "corn-404",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41790, 37.77695]
+    }
+  },
+  {
+    "itemId": "peas-405",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41810, 37.77690]
+    }
+  },
+  {
+    "itemId": "pizza-501",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42200, 37.77400]
+    }
+  },
+  {
+    "itemId": "veg-502",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42205, 37.77405]
+    }
+  },
+  {
+    "itemId": "ice-503",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42195, 37.77410]
+    }
+  },
+  {
+    "itemId": "fries-504",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42190, 37.77395]
+    }
+  },
+  {
+    "itemId": "waffle-505",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.42210, 37.77390]
+    }
+  },
+  {
+    "itemId": "soap-601",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41600, 37.77800]
+    }
+  },
+  {
+    "itemId": "bleach-602",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41605, 37.77805]
+    }
+  },
+  {
+    "itemId": "spray-603",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41595, 37.77810]
+    }
+  },
+  {
+    "itemId": "tissues-604",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41590, 37.77795]
+    }
+  },
+  {
+    "itemId": "wipes-605",
+    "location": {
+      "type": "Point",
+      "coordinates": [-122.41610, 37.77790]
+    }
+  }
+]
